@@ -1,6 +1,6 @@
 #pragma once
 
-#include "numeric_type.hh"
+#include "type_concepts.hh"
 
 namespace aether::_math_impl {
 

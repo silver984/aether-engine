@@ -1,26 +1,12 @@
 #pragma once
 
-#include "numeric_type.hh"
 #include "operations.hh"
+#include "type_concepts.hh"
 
-#include <concepts>
 #include <cstdint>
 #include <type_traits>
 
 namespace aether::_math_impl {
-
-template <typename T_>
-concept indexable_math_type_ = numeric_type_<typename T_::_value_type> && requires(T_ v, T_ const cv, uint8_t i) {
-	{ T_::capacity() } -> std::same_as<uint8_t>;
-	{ v[i] } -> std::same_as<typename T_::_value_type&>;
-	{ cv[i] } -> std::same_as<typename T_::_value_type const&>;
-};
-
-template <typename T_, uint8_t N_>
-concept matching_capacity_math_type_ = indexable_math_type_<T_> && requires { requires T_::capacity() == N_; };
-
-template <typename T_>
-concept proper_numeric_type_ = numeric_type_<T_> && !indexable_math_type_<T_>;
 
 template <template <numeric_type_> typename T_, numeric_type_ V_, uint8_t N_>
 class simple_math_type_ {
@@ -63,22 +49,22 @@ public:
 		return evaluate_<division_>(other);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator+(Num const& val) const {
 		return evaluate_<addition_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator-(Num const& val) const {
 		return evaluate_<subtraction_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator*(Num const& val) const {
 		return evaluate_<multiplication_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator/(Num const& val) const {
 		return evaluate_<division_>(val);
 	}
@@ -103,22 +89,22 @@ public:
 		return perform_<division_assign_>(other);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	constexpr return_type_& operator+=(Num const& val) {
 		return perform_<addition_assign_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	constexpr return_type_& operator-=(Num const& val) {
 		return perform_<subtraction_assign_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	constexpr return_type_& operator*=(Num const& val) {
 		return perform_<multiplication_assign_>(val);
 	}
 
-	template <proper_numeric_type_ Num>
+	template <numeric_type_ Num>
 	constexpr return_type_& operator/=(Num const& val) {
 		return perform_<division_assign_>(val);
 	}
@@ -174,13 +160,13 @@ public:
 	}
 
 private:
-	template <typename Num_>
+	template <numeric_type_ Num_>
 	using common_value_type_ = std::common_type_t<_value_type, Num_>;
 
-	template <typename Other_>
+	template <matching_capacity_math_type_<N_> Other_>
 	using common_math_value_type_ = common_value_type_<typename Other_::_value_type>;
 
-	template <typename Other_>
+	template <matching_capacity_math_type_<N_> Other_>
 	using common_indexable_math_type_ = T_<common_math_value_type_<Other_>>;
 
 	[[nodiscard]] constexpr return_type_& self_() { return static_cast<return_type_&>(*this); }
@@ -197,7 +183,7 @@ private:
 		return out;
 	}
 
-	template <typename Operation_, proper_numeric_type_ Num_>
+	template <typename Operation_, numeric_type_ Num_>
 	[[nodiscard]] constexpr auto evaluate_(Num_ const& val) const {
 		using common = common_value_type_<Num_>;
 		T_<common> out;
@@ -217,7 +203,7 @@ private:
 		return self_();
 	}
 
-	template <typename Operation_, proper_numeric_type_ Num_>
+	template <typename Operation_, numeric_type_ Num_>
 	constexpr return_type_& perform_(Num_ const& val) {
 		Operation_ op{};
 		for (uint8_t i = 0; i < capacity(); ++i) {

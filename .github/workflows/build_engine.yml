@@ -67,6 +67,10 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libgl1-mesa-dev
+
+      - name: Show GCC version
+        if: runner.os == 'Linux'
+        run: g++ --version
       
       - name: Install Pillow
         run: python -m pip install pillow

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math-impl/simple_math_type.hh"
+#include "math-impl/type_concepts.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -8,7 +8,7 @@
 
 namespace aether {
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr T lerp(T const& a, T const& b, T t) {
 	return a + (b - a) * t;
 }
@@ -27,17 +27,17 @@ template <_math_impl::indexable_math_type_ T>
 	return lerp(a, b, typename T::_value_type{1} - std::exp(-l * dt));
 }
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr int sign(T const& val) {
 	return (val > T{0}) - (val < T{0});
 }
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr T avg(T const& a, T const& b) {
 	return (a + b) / T{2};
 }
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr T map(T const& val, T const& in_min, T const& in_max, T const& out_min, T const& out_max) {
 	return out_min + (out_max - out_min) * ((val - in_min) / (in_max - in_min));
 }
@@ -167,12 +167,12 @@ template <_math_impl::matching_capacity_math_type_<2> T>
 	return a[0] * b[0] + a[1] * b[1];
 }
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr T deg2rad(T const& deg) {
 	return deg * (std::numbers::pi_v<T> / T{180});
 }
 
-template <_math_impl::proper_numeric_type_ T>
+template <_math_impl::numeric_type_ T>
 [[nodiscard]] constexpr T rad2deg(T const& rad) {
 	return rad * (T{180} / std::numbers::pi_v<T>);
 }
