@@ -4,6 +4,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <new>
 #include <utility>
 
 namespace aether {
