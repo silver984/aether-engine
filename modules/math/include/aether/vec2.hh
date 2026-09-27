@@ -2,6 +2,8 @@
 
 #include "math-impl/simple_math_type.hh"
 
+#include <utility>
+
 namespace aether {
 
 template <_math_impl::numeric_type_ T>
@@ -16,7 +18,7 @@ struct vec2 final : public _math_impl::simple_math_type_<vec2, T, 2> {
 	        : x(xv)
 	        , y(yv) {}
 
-	constexpr T& operator[](uint8_t i) {
+	constexpr T const& operator[](uint8_t i) const {
 		switch (i) {
 		case 0: {
 			return x;
@@ -30,7 +32,7 @@ struct vec2 final : public _math_impl::simple_math_type_<vec2, T, 2> {
 		}
 	}
 
-	constexpr T const& operator[](uint8_t i) const { return const_cast<vec2&>(*this)[i]; }
+	constexpr T& operator[](uint8_t i) { return const_cast<T&>(std::as_const(*this)[i]); }
 
 	T x = T{0};
 	T y = T{0};

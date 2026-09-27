@@ -1,4 +1,5 @@
 #include <aether/renderer.hh>
+#include <aether/size.hh>
 #include <aether/vec2.hh>
 
 #include <raylib.h>
@@ -68,7 +69,7 @@ void draw_texture(Texture const& texture, rect<float> src, mat3 const& transform
 		src.y -= src.height;
 	}
 
-	vec2<float> const bounds = {
+	size<float> const bounds = {
 	        (float)texture.width,
 	        (float)texture.height,
 	};

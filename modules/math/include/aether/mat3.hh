@@ -20,7 +20,7 @@ public:
 	[[nodiscard]] mat3 operator*(mat3 const& other) const;
 
 	[[nodiscard]] float* operator[](uint8_t i) { return m_[i]; }
-	[[nodiscard]] float const* operator[](uint8_t i) const { return const_cast<mat3&>(*this)[i]; }
+	[[nodiscard]] float const* operator[](uint8_t i) const { return m_[i]; }
 
 private:
 	float m_[3][3];
