@@ -61,16 +61,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
+            gcc-16.1.0 \
+            g++-16.1.0 \
             libx11-dev \
             libxrandr-dev \
             libxinerama-dev \
             libxcursor-dev \
             libxi-dev \
             libgl1-mesa-dev
-
-      - name: Show GCC version
-        if: runner.os == 'Linux'
-        run: g++ --version
       
       - name: Install Pillow
         run: python -m pip install pillow
