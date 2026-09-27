@@ -12,12 +12,12 @@ bool node::add_child(strong_ref<node> child) {
 	}
 
 	strong_ref<node> self = this->strong_self_();
+
 	if (child == self || child->has_ancestor_(self)) {
 		return false;
 	}
 
-	bool const is_duplicate = std::find(children_.begin(), children_.end(), child) != children_.end();
-	if (is_duplicate) {
+	if (std::ranges::contains(children_, child)) {
 		return false;
 	}
 
