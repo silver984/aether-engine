@@ -25,7 +25,7 @@ public:
 	node(context const& ctx)
 	        : ctx_(ctx) {}
 
-	[[nodiscard]] static strong_ref<node> create(context const& ctx) { return ref::strong<node>(ctx); }
+	[[nodiscard]] static strong_ref<node> create(context const& ctx) { return strong<node>(ctx); }
 
 	// todo: fetch child
 	bool add_child(strong_ref<node> child);

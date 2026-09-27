@@ -22,7 +22,7 @@ public:
 
 	template <std::derived_from<scene> T, typename... Args>
 	[[nodiscard]] static unique_ref<T> create(context const& ctx, Args&&... args) {
-		unique_ref<T> out = ref::unique<T>(ctx, std::forward<Args>(args)...);
+		unique_ref<T> out = unique<T>(ctx, std::forward<Args>(args)...);
 		if (!out->init_interface_()) {
 			return nullptr;
 		}

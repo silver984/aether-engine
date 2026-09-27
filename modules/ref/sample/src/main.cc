@@ -24,10 +24,10 @@ void print_count(strong_ref<T> const& val) {
 
 int main() {
 	{
-		strong_ref<fruit> a = ref::strong<red_apple>();
+		strong_ref<fruit> a = strong<red_apple>();
 		a->tasty();
 
-		strong_ref<red_apple> b = ref::dynamic_strong_cast<red_apple>(a);
+		strong_ref<red_apple> b = dynamic_strong_cast<red_apple>(a);
 		if (b) {
 			b->yummy();
 		}
@@ -42,7 +42,7 @@ int main() {
 	}
 
 	{
-		unique_ref<fruit> d = ref::unique<red_apple>();
+		unique_ref<fruit> d = unique<red_apple>();
 		fruit* ptr          = d.get();
 		red_apple* casted   = dynamic_cast<red_apple*>(ptr);
 		if (casted) {

@@ -7,13 +7,15 @@
 #include <new>
 #include <utility>
 
-namespace aether {
+namespace aether::_ref_impl {
+struct factory_;
+}
 
-struct ref;
+namespace aether {
 
 template <typename T>
 class unique_ref final {
-	friend class ref;
+	friend class _ref_impl::factory_;
 
 	template <typename>
 	friend class unique_ref;

@@ -32,7 +32,7 @@ public:
 
 	template <_node_comp_impl::component_type_ T>
 	[[nodiscard]] static unique_ref<T> create(context const& ctx, aether::node* node) {
-		unique_ref<T> out = ref::unique<T>(ctx, node);
+		unique_ref<T> out = unique<T>(ctx, node);
 		if (!out || !out->init_interface_()) {
 			return nullptr;
 		}

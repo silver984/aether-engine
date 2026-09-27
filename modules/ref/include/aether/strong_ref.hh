@@ -10,18 +10,14 @@
 namespace aether::_ref_impl {
 template <typename T_>
 concept self_referenceable_ = requires { typename T_::_is_self_referenceable; };
+struct factory_;
 } // namespace aether::_ref_impl
 
 namespace aether {
 
-struct ref;
-
-template <typename>
-class weak_ref;
-
 template <typename T>
 class strong_ref final {
-	friend class ref;
+	friend class _ref_impl::factory_;
 
 	template <typename>
 	friend class strong_ref;

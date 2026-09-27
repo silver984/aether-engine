@@ -4,9 +4,6 @@
 
 namespace aether {
 
-template <typename>
-class self_ref;
-
 template <typename T>
 class weak_ref final {
 	template <typename>
