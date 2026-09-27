@@ -56,13 +56,17 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Setup GCC
+        if: runner.os == 'Linux'
+        uses: egor-tensin/setup-gcc@v2
+        with:
+          version: 16
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt update
           sudo apt install -y \
-            gcc-16.1.0 \
-            g++-16.1.0 \
             libx11-dev \
             libxrandr-dev \
             libxinerama-dev \
