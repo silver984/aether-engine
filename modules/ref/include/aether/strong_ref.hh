@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aether/ref-impl/block.hh"
 #include "ref-impl/block.hh"
 
 #include <concepts>
@@ -26,35 +27,30 @@ class strong_ref final {
 	friend class weak_ref;
 
 public:
-	strong_ref()
-	        : ptr_(nullptr)
-	        , block_(nullptr) {}
+	strong_ref() = default;
+	strong_ref(std::nullptr_t) {}
 
-	strong_ref(std::nullptr_t)
-	        : ptr_(nullptr)
-	        , block_(nullptr) {}
-
-	strong_ref(strong_ref const& other)
-	        : ptr_(other.ptr_)
-	        , block_(other.block_) {
+	strong_ref(strong_ref const& ref)
+	        : ptr_(ref.ptr_)
+	        , block_(ref.block_) {
 		increment_strong_count_();
 	}
 
-	template <std::derived_from<T> Other>
-	strong_ref(strong_ref<Other> const& other)
-	        : ptr_(static_cast<T*>(other.ptr_))
-	        , block_(other.block_) {
+	template <std::derived_from<T> U>
+	strong_ref(strong_ref<U> const& ref)
+	        : ptr_(static_cast<T*>(ref.ptr_))
+	        , block_(ref.block_) {
 		increment_strong_count_();
 	}
 
-	strong_ref(strong_ref&& other)
-	        : ptr_(std::exchange(other.ptr_, nullptr))
-	        , block_(std::exchange(other.block_, nullptr)) {}
+	strong_ref(strong_ref&& ref)
+	        : ptr_(std::exchange(ref.ptr_, nullptr))
+	        , block_(std::exchange(ref.block_, nullptr)) {}
 
-	template <std::derived_from<T> Other>
-	strong_ref(strong_ref<Other>&& other)
-	        : ptr_(static_cast<T*>(std::exchange(other.ptr_, nullptr)))
-	        , block_(std::exchange(other.block_, nullptr)) {}
+	template <std::derived_from<T> U>
+	strong_ref(strong_ref<U>&& ref)
+	        : ptr_(static_cast<T*>(std::exchange(ref.ptr_, nullptr)))
+	        , block_(std::exchange(ref.block_, nullptr)) {}
 
 	~strong_ref() { release(); }
 
@@ -63,18 +59,17 @@ public:
 			return;
 		}
 
-		_ref_impl::shared_block_* old_block = std::exchange(block_, nullptr);
-		ptr_                                = nullptr;
+		_ref_impl::counted_block_* old_block = std::exchange(block_, nullptr);
+		ptr_                                 = nullptr;
 
 		if (--old_block->strong_count != 0) {
 			return;
 		}
 
-		old_block->releaser(old_block->ptr);
-		old_block->ptr = nullptr;
+		old_block->release_ptr();
 
 		if (--old_block->weak_count == 0) {
-			delete old_block;
+			old_block->release_self();
 		}
 	}
 
@@ -87,41 +82,41 @@ public:
 
 	explicit operator bool() const { return get() != nullptr; }
 
-	strong_ref& operator=(strong_ref const& other) {
-		if (this != &other) {
-			return copy_(other);
+	strong_ref& operator=(strong_ref const& ref) {
+		if (this != &ref) {
+			return copy_(ref);
 		}
 		return *this;
 	}
 
-	template <std::derived_from<T> Other>
-	strong_ref& operator=(strong_ref<Other> const& other) {
-		return copy_(other);
+	template <std::derived_from<T> U>
+	strong_ref& operator=(strong_ref<U> const& ref) {
+		return copy_(ref);
 	}
 
-	strong_ref& operator=(strong_ref&& other) {
-		if (this != &other) {
-			return move_(other);
+	strong_ref& operator=(strong_ref&& ref) {
+		if (this != &ref) {
+			return move_(ref);
 		}
 		return *this;
 	}
 
-	template <std::derived_from<T> Other>
-	strong_ref& operator=(strong_ref<Other>&& other) {
-		return move_(other);
+	template <std::derived_from<T> U>
+	strong_ref& operator=(strong_ref<U>&& ref) {
+		return move_(ref);
 	}
 
 	[[nodiscard]] bool operator==(std::nullptr_t) const { return get() == nullptr; }
 	[[nodiscard]] bool operator!=(std::nullptr_t) const { return !(*this == nullptr); }
 
-	template <std::derived_from<T> Other>
-	[[nodiscard]] bool operator==(strong_ref<Other> const& other) const {
-		return get() == other.get();
+	template <std::derived_from<T> U>
+	[[nodiscard]] bool operator==(strong_ref<U> const& ref) const {
+		return get() == ref.get();
 	}
 
-	template <std::derived_from<T> Other>
-	[[nodiscard]] bool operator!=(strong_ref<Other> const& other) const {
-		return !(*this == other);
+	template <std::derived_from<T> U>
+	[[nodiscard]] bool operator!=(strong_ref<U> const& ref) const {
+		return !(*this == ref);
 	}
 
 private:
@@ -130,7 +125,7 @@ private:
 			return;
 		}
 
-		block_ = new (std::nothrow) _ref_impl::shared_block_;
+		block_ = new (std::nothrow) _ref_impl::shared_block_(ptr);
 
 		if (!block_) {
 			delete ptr;
@@ -138,12 +133,8 @@ private:
 		}
 
 		ptr_                 = ptr;
-		block_->ptr          = ptr;
 		block_->strong_count = 1;
 		block_->weak_count   = 1; // implicit count
-		block_->releaser     = [](void* p) {
-			delete static_cast<T*>(p);
-		};
 
 		if constexpr (_ref_impl::self_referenceable_<T>) {
 			ptr->init_self_reference_(*this);
@@ -156,25 +147,25 @@ private:
 		}
 	}
 
-	template <std::derived_from<T> Other_>
-	strong_ref& copy_(strong_ref<Other_> const& other) {
+	template <std::derived_from<T> U_>
+	strong_ref& copy_(strong_ref<U_> const& ref) {
 		release();
-		ptr_   = static_cast<T*>(other.ptr_);
-		block_ = other.block_;
+		ptr_   = static_cast<T*>(ref.ptr_);
+		block_ = ref.block_;
 		increment_strong_count_();
 		return *this;
 	}
 
-	template <std::derived_from<T> Other_>
-	strong_ref& move_(strong_ref<Other_>& other) {
+	template <std::derived_from<T> U_>
+	strong_ref& move_(strong_ref<U_>& ref) {
 		release();
-		ptr_   = static_cast<T*>(std::exchange(other.ptr_, nullptr));
-		block_ = std::exchange(other.block_, nullptr);
+		ptr_   = static_cast<T*>(std::exchange(ref.ptr_, nullptr));
+		block_ = std::exchange(ref.block_, nullptr);
 		return *this;
 	}
 
-	T* ptr_;
-	_ref_impl::shared_block_* block_;
+	T* ptr_                           = nullptr;
+	_ref_impl::counted_block_* block_ = nullptr;
 };
 
 } // namespace aether

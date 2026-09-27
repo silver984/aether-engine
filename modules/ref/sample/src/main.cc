@@ -24,6 +24,14 @@ void print_count(strong_ref<T> const& val) {
 
 int main() {
 	{
+		strong_ref<red_apple> a;
+		strong_ref<fruit> b = a;
+
+		weak_ref<red_apple> c = a;
+		weak_ref<fruit> d     = b;
+	}
+
+	{
 		strong_ref<fruit> a = strong<red_apple>();
 		a->tasty();
 

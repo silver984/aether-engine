@@ -21,24 +21,16 @@ class unique_ref final {
 	friend class unique_ref;
 
 public:
-	unique_ref()
-	        : ptr_(nullptr)
-	        , block_(nullptr) {}
-
-	unique_ref(std::nullptr_t)
-	        : ptr_(nullptr)
-	        , block_(nullptr) {}
-
+	unique_ref() = default;
+	unique_ref(std::nullptr_t) {}
 	unique_ref(unique_ref const&) = delete;
 
-	unique_ref(unique_ref&& other)
-	        : ptr_(std::exchange(other.ptr_, nullptr))
-	        , block_(std::exchange(other.block_, nullptr)) {}
+	unique_ref(unique_ref&& ref)
+	        : block_(std::exchange(ref.block_, nullptr)) {}
 
-	template <std::derived_from<T> Other>
-	unique_ref(unique_ref<Other>&& other)
-	        : ptr_(static_cast<T*>(std::exchange(other.ptr_, nullptr)))
-	        , block_(std::exchange(other.block_, nullptr)) {}
+	template <std::derived_from<T> U>
+	unique_ref(unique_ref<U>&& ref)
+	        : block_(std::exchange(ref.block_, nullptr)) {}
 
 	~unique_ref() { release(); }
 
@@ -46,17 +38,12 @@ public:
 		if (!block_) {
 			return;
 		}
-
-		block_->releaser(block_->ptr);
-		block_->ptr = nullptr;
-
-		delete block_;
-
-		ptr_   = nullptr;
+		block_->release_ptr();
+		block_->release_self();
 		block_ = nullptr;
 	}
 
-	[[nodiscard]] T* get() const { return ptr_; }
+	[[nodiscard]] T* get() const { return block_ ? static_cast<_ref_impl::unique_block_<T>*>(block_)->ptr : nullptr; }
 	[[nodiscard]] T* operator->() const { return get(); }
 	[[nodiscard]] T& operator*() const { return *get(); }
 
@@ -64,56 +51,53 @@ public:
 
 	unique_ref& operator=(unique_ref const&) = delete;
 
-	unique_ref& operator=(unique_ref&& other) {
-		if (this != &other) {
-			return move_(other);
+	unique_ref& operator=(unique_ref&& ref) {
+		if (this != &ref) {
+			return move_(ref);
 		}
 		return *this;
 	}
 
-	template <std::derived_from<T> Other>
-	unique_ref& operator=(unique_ref<Other>&& other) {
-		return move_(other);
+	template <std::derived_from<T> U>
+	unique_ref& operator=(unique_ref<U>&& ref) {
+		return move_(ref);
 	}
 
 	[[nodiscard]] bool operator==(std::nullptr_t) const { return get() == nullptr; }
 	[[nodiscard]] bool operator!=(std::nullptr_t) const { return !(*this == nullptr); }
 
-	template <std::derived_from<T> Other>
-	[[nodiscard]] bool operator==(unique_ref<Other> const& other) const {
-		return get() == other.get();
+	template <std::derived_from<T> U>
+	[[nodiscard]] bool operator==(unique_ref<U> const& ref) const {
+		return get() == ref.get();
 	}
 
-	template <std::derived_from<T> Other>
-	[[nodiscard]] bool operator!=(unique_ref<Other> const& other) const {
-		return !(*this == other);
+	template <std::derived_from<T> U>
+	[[nodiscard]] bool operator!=(unique_ref<U> const& ref) const {
+		return !(*this == ref);
 	}
 
 private:
 	explicit unique_ref(T* ptr) {
-		block_ = new (std::nothrow) _ref_impl::unique_block_;
-
-		if (!block_) {
+		if (!ptr) {
 			return;
 		}
 
-		ptr_             = ptr;
-		block_->ptr      = ptr;
-		block_->releaser = [](void* p) {
-			delete static_cast<T*>(p);
-		};
+		block_ = new (std::nothrow) _ref_impl::unique_block_(ptr);
+
+		if (!block_) {
+			delete ptr;
+			return;
+		}
 	}
 
-	template <std::derived_from<T> Other_>
-	unique_ref& move_(unique_ref<Other_>& other) {
+	template <std::derived_from<T> U_>
+	unique_ref& move_(unique_ref<U_>& ref) {
 		release();
-		ptr_   = static_cast<T*>(std::exchange(other.ptr_, nullptr));
-		block_ = std::exchange(other.block_, nullptr);
+		block_ = std::exchange(ref.block_, nullptr);
 		return *this;
 	}
 
-	T* ptr_;
-	_ref_impl::unique_block_* block_;
+	_ref_impl::block_* block_ = nullptr;
 };
 
 } // namespace aether

@@ -21,6 +21,7 @@ template <typename T, typename... Args>
 }
 
 template <typename T, typename U>
+        requires std::is_base_of_v<U, T>
 [[nodiscard]] strong_ref<T> dynamic_strong_cast(strong_ref<U> const& a) {
 	return _ref_impl::factory_::dynamic_strong_cast<T>(a);
 }
