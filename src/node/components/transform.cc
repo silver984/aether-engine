@@ -22,7 +22,7 @@ void transform::set_position(vec2<float> val) {
 }
 
 void transform::set_anchor(vec2<float> val) {
-	val = clamp(val, vec2<float>(0.f), vec2<float>(1.f));
+	val = clamp(val, {}, {1.f});
 	if (anchor_ == val) {
 		return;
 	}
@@ -31,7 +31,7 @@ void transform::set_anchor(vec2<float> val) {
 }
 
 void transform::set_scale(vec2<float> val) {
-	val = max(val, vec2<float>(0.f));
+	val = max(val, {});
 	if (scale_ == val) {
 		return;
 	}
@@ -102,8 +102,8 @@ void transform::update_matrix_() {
 	};
 
 	vec2<float> const shear_rad = {
-	        degrees_to_radians(shear_.x),
-	        degrees_to_radians(shear_.y),
+	        deg2rad(shear_.x),
+	        deg2rad(shear_.y),
 	};
 
 	vec2<float> const scale_factor = {
@@ -112,7 +112,7 @@ void transform::update_matrix_() {
 	};
 
 	mat3 const t = mat3::translation(position_);
-	mat3 const r = mat3::rotation(degrees_to_radians(rotation_));
+	mat3 const r = mat3::rotation(deg2rad(rotation_));
 	mat3 const s = mat3::scale(scale_ * scale_factor);
 	mat3 const k = mat3::skew(shear_rad);
 	mat3 const a = mat3::translation(-anchor_position);

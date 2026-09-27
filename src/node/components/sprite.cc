@@ -27,7 +27,7 @@ bool sprite::set_texture(zip_archive const& pak, std::string_view file) {
 	} else {
 		return false;
 	}
-	set_texture_source_rect(rect<float>(0.f, 0.f, (float)texture_->width, (float)texture_->height));
+	set_texture_source_rect({0.f, 0.f, (float)texture_->width, (float)texture_->height});
 	update_transform_bounds();
 	return true;
 }
@@ -67,7 +67,7 @@ bool sprite::update_transform_bounds() {
 	}
 	uint32_t w = (uint32_t)std::abs(std::round(texture_source_rect_.width));
 	uint32_t h = (uint32_t)std::abs(std::round(texture_source_rect_.height));
-	tc->set_bounds(size<uint32_t>(w, h));
+	tc->set_bounds({w, h});
 	return true;
 }
 

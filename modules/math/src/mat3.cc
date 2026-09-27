@@ -2,7 +2,6 @@
 #include <aether/math.hh>
 
 #include <cmath>
-#include <cstddef>
 
 namespace aether {
 
@@ -13,9 +12,9 @@ mat3::mat3()
                   {0.f, 0.f, 1.f},
           } {}
 
-mat3 mat3::rotation(float radians) {
-	float const c = std::cos(radians);
-	float const s = std::sin(radians);
+mat3 mat3::rotation(float rad) {
+	float const c = std::cos(rad);
+	float const s = std::sin(rad);
 	mat3 out;
 	out.m_[0][0] = c;
 	out.m_[0][1] = -s;
@@ -24,8 +23,8 @@ mat3 mat3::rotation(float radians) {
 	return out;
 }
 
-mat3 mat3::skew(vec2<float> radians) {
-	vec2<float> const t = tan(radians);
+mat3 mat3::skew(vec2<float> rad) {
+	vec2<float> const t = tan(rad);
 	mat3 out;
 	out.m_[0][1] = t.x;
 	out.m_[1][0] = t.y;
@@ -60,11 +59,11 @@ vec2<float> mat3::translation() const {
 	};
 }
 
-mat3 mat3::operator*(mat3 const& o) const {
+mat3 mat3::operator*(mat3 const& other) const {
 	mat3 out;
-	for (size_t row = 0; row < 3; ++row) {
-		for (size_t col = 0; col < 3; ++col) {
-			out.m_[row][col] = m_[row][0] * o.m_[0][col] + m_[row][1] * o.m_[1][col] + m_[row][2] * o.m_[2][col];
+	for (uint8_t row = 0; row < 3; ++row) {
+		for (uint8_t col = 0; col < 3; ++col) {
+			out.m_[row][col] = m_[row][0] * other.m_[0][col] + m_[row][1] * other.m_[1][col] + m_[row][2] * other.m_[2][col];
 		}
 	}
 	return out;

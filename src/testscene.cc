@@ -26,7 +26,7 @@ bool testscene::init_() {
 
 		transform* t = boy->component<transform>();
 		t->set_scale(0.6f);
-		t->set_position(window::bounds() * 0.5f);
+		t->set_position(static_cast<vec2<float>>(window::bounds()) * 0.5f);
 		this->add_child(boy);
 	}
 
