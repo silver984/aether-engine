@@ -174,7 +174,7 @@ public:
 	}
 
 private:
-	template <numeric_type_ Num_>
+	template <proper_numeric_type_ Num_>
 	using common_value_type_ = std::common_type_t<_value_type, Num_>;
 
 	template <matching_capacity_math_type_<N_> Other_>
@@ -197,7 +197,7 @@ private:
 		return out;
 	}
 
-	template <typename Operation_, numeric_type_ Num_>
+	template <typename Operation_, proper_numeric_type_ Num_>
 	[[nodiscard]] constexpr auto evaluate_(Num_ const& val) const {
 		using common = common_value_type_<Num_>;
 		T_<common> out;
@@ -217,7 +217,7 @@ private:
 		return self_();
 	}
 
-	template <typename Operation_, numeric_type_ Num_>
+	template <typename Operation_, proper_numeric_type_ Num_>
 	constexpr return_type_& perform_(Num_ const& val) {
 		Operation_ op{};
 		for (uint8_t i = 0; i < capacity(); ++i) {
