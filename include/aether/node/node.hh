@@ -31,8 +31,7 @@ public:
 	bool add_child(strong_ref<node> child);
 	bool remove_child(strong_ref<node> const& child);
 
-	void destroy_all();
-
+	void detach_all();
 	bool detach_from_parent();
 
 	template <_node_comp_impl::component_type_ T>

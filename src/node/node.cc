@@ -52,13 +52,13 @@ bool node::remove_child(strong_ref<node> const& child) {
 	return true;
 }
 
-void node::destroy_all() {
+void node::detach_all() {
 	detach_from_parent();
 	while (!children_.empty()) {
 		strong_ref<node> child = children_.back(); // intentional copy
 		children_.pop_back();
 		child->parent_.detach();
-		child->destroy_all();
+		child->detach_all();
 	}
 }
 
