@@ -29,8 +29,8 @@ public:
 	virtual ~node_component() = default;
 
 	template <_node_comp_impl::component_type_ T>
-	[[nodiscard]] static unique_ref<T> create(context const& ctx, strong_ref<node> const& n) {
-		unique_ref<T> out = unique<T>(ctx, n);
+	[[nodiscard]] static strong_ref<T> create(context const& ctx, strong_ref<node> const& n) {
+		strong_ref<T> out = strong<T>(ctx, n);
 		if (!out || !out->init_interface_()) {
 			return nullptr;
 		}

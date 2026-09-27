@@ -9,6 +9,7 @@
 #include <aether/size.hh>
 #include <aether/vec2.hh>
 
+#include <algorithm>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -35,29 +36,34 @@ public:
 	bool detach_from_parent();
 
 	template <_node_comp_impl::component_type_ T>
-	T* add_component() {
-		if (T* existing = component<T>()) {
+	strong_ref<T> add_component() {
+		if (strong_ref<T> existing = component<T>()) {
 			return existing;
 		}
-		unique_ref<T> c = node_component::create<T>(ctx_, this->strong_self_());
+		strong_ref<T> c = node_component::create<T>(ctx_, this->strong_self_());
 		if (!c) {
 			return nullptr;
 		}
 		auto& out = components_.emplace_back(std::move(c));
-		return static_cast<T*>(out.get());
+		return dynamic_strong_cast<T>(out);
 	}
 
 	template <_node_comp_impl::component_type_ T>
-	void remove_component() {
-		std::erase_if(components_, [](unique_ref<node_component> const& component) {
-			return dynamic_cast<T*>(component.get()) != nullptr;
+	bool remove_component() {
+		auto it = std::ranges::find_if(components_, [](strong_ref<node_component> const& comp) {
+			return dynamic_strong_cast<T>(comp) != nullptr;
 		});
+		if (it == components_.end() || (*it).strong_count() > 1) {
+			return false;
+		}
+		components_.erase(it);
+		return true;
 	}
 
 	template <_node_comp_impl::component_type_ T>
-	[[nodiscard]] T* component() const {
-		for (auto& component : components_) {
-			if (T* ptr = dynamic_cast<T*>(component.get())) {
+	[[nodiscard]] strong_ref<T> component() const {
+		for (auto const& comp : components_) {
+			if (strong_ref<T> ptr = dynamic_strong_cast<T>(comp)) {
 				return ptr;
 			}
 		}
@@ -94,7 +100,7 @@ private:
 	aether::scene* scene_;
 	weak_ref<node> parent_;
 	std::vector<strong_ref<node>> children_;
-	std::vector<unique_ref<node_component>> components_;
+	std::vector<strong_ref<node_component>> components_;
 
 	// rgba color_;
 	// rgba combined_color_;

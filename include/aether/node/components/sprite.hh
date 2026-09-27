@@ -1,6 +1,6 @@
 #pragma once
 
-#include "component.hh"
+#include "transform.hh"
 
 #include <aether/rect.hh>
 
@@ -31,7 +31,7 @@ public:
 
 	bool update_transform_bounds();
 
-	[[nodiscard]] weak_ref<Texture> texture() const { return texture_; }
+	[[nodiscard]] strong_ref<Texture> texture() const { return texture_; }
 
 protected:
 	bool init_() override;
@@ -39,6 +39,7 @@ protected:
 
 private:
 	strong_ref<Texture> texture_;
+	strong_ref<transform> tc_;
 	rect<float> texture_source_rect_;
 };
 

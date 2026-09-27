@@ -70,7 +70,7 @@ void transform::node_parented_() {
 
 void transform::visit_() {
 	node_component::visit_();
-	visibility* vc = this->owner()->component<visibility>();
+	strong_ref<visibility> vc = this->owner()->component<visibility>();
 	if (vc && !vc->is_visible()) {
 		return;
 	}
@@ -87,7 +87,7 @@ void transform::mark_transform_dirty_() {
 	}
 	is_transform_dirty_ = true;
 	for (auto& child : this->owner()->children()) {
-		if (transform* tc = child->component<transform>()) {
+		if (strong_ref<transform> tc = child->component<transform>()) {
 			tc->mark_transform_dirty_();
 		}
 	}
@@ -117,14 +117,14 @@ void transform::update_matrix_() {
 	mat3 const k = mat3::skew(shear_rad);
 	mat3 const a = mat3::translation(-anchor_position);
 
-	matrix_                    = t * r * s * k * a;
-	strong_ref<aether::node> p = this->owner()->parent();
+	matrix_            = t * r * s * k * a;
+	strong_ref<node> p = this->owner()->parent();
 
 	if (!p) {
 		return;
 	}
 
-	if (transform* tc = p->component<transform>()) {
+	if (strong_ref<transform> tc = p->component<transform>()) {
 		matrix_ = tc->matrix_ * matrix_;
 	}
 }

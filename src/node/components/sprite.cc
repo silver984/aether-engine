@@ -60,13 +60,9 @@ void sprite::set_texture_wrap(texture_wrap wrap_type) {
 }
 
 bool sprite::update_transform_bounds() {
-	transform* tc = this->owner()->component<transform>();
-	if (!tc) {
-		return false;
-	}
 	uint32_t w = (uint32_t)std::abs(std::round(texture_source_rect_.width));
 	uint32_t h = (uint32_t)std::abs(std::round(texture_source_rect_.height));
-	tc->set_bounds({w, h});
+	tc_->set_bounds({w, h});
 	return true;
 }
 
@@ -74,7 +70,8 @@ bool sprite::init_() {
 	if (!node_component::init_()) {
 		return false;
 	}
-	return this->owner()->add_component<transform>() != nullptr;
+	tc_ = this->owner()->add_component<transform>();
+	return tc_ != nullptr;
 }
 
 void sprite::draw_() {
@@ -84,14 +81,14 @@ void sprite::draw_() {
 		return;
 	}
 
-	strong_ref<node> n = this->owner();
-	visibility* vc     = n->component<visibility>();
+	strong_ref<node> n        = this->owner();
+	strong_ref<visibility> vc = n->component<visibility>();
 
 	if (vc && !vc->is_visible()) {
 		return;
 	}
 
-	transform* tc = n->component<transform>();
+	strong_ref<transform> tc = n->component<transform>();
 	renderer::draw_texture(*texture_, texture_source_rect_, tc ? tc->matrix() : mat3::identity(), rgba(255) /* temporary rgba */);
 }
 

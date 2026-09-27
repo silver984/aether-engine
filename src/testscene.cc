@@ -15,35 +15,36 @@ bool testscene::init_() {
 
 	zip_archive pak("aether.pak");
 	strong_ref<node> boy = node::create(this->ctx_);
+
 	if (!boy) {
 		return false;
 	}
 
 	{
-		sprite* s = boy->add_component<sprite>();
-		s->set_texture(pak, "boy");
-		s->set_antialiasing(true);
+		strong_ref<sprite> sc = boy->add_component<sprite>();
+		sc->set_texture(pak, "boy");
+		sc->set_antialiasing(true);
 
-		transform* t = boy->component<transform>();
-		t->set_scale(0.6f);
-		t->set_position(static_cast<vec2<float>>(window::bounds()) * 0.5f);
+		strong_ref<transform> tc = boy->component<transform>();
+		tc->set_scale(0.6f);
+		tc->set_position(static_cast<vec2<float>>(window::bounds()) * 0.5f);
 		this->add_child(boy);
 	}
 
 	strong_ref<node> silly = node::create(this->ctx_);
+
 	if (!silly) {
 		return false;
 	}
 
 	{
-		sprite* s = silly->add_component<sprite>();
-		s->set_texture(pak, "cats.silly");
-		s->set_antialiasing(true);
+		strong_ref<sprite> sc = silly->add_component<sprite>();
+		sc->set_texture(pak, "cats.silly");
+		sc->set_antialiasing(true);
 
-		transform* silly_t = silly->component<transform>();
-		transform* boy_t   = boy->component<transform>();
-		silly_t->set_scale(0.2f);
-		silly_t->set_position(boy_t->position() - 120.f);
+		strong_ref<transform> tc = silly->component<transform>();
+		tc->set_scale(0.2f);
+		tc->set_position(boy->component<transform>()->position() - 120.f);
 		boy->add_child(silly);
 	}
 
