@@ -19,6 +19,9 @@ concept indexable_math_type_ = numeric_type_<typename T_::_value_type> && requir
 template <typename T_, uint8_t N_>
 concept matching_capacity_math_type_ = indexable_math_type_<T_> && requires { requires T_::capacity() == N_; };
 
+template <typename T_>
+concept proper_numeric_type_ = numeric_type_<T_> && !indexable_math_type_<T_>;
+
 template <template <numeric_type_> typename T_, numeric_type_ V_, uint8_t N_>
 class simple_math_type_ {
 public:
@@ -60,22 +63,22 @@ public:
 		return evaluate_<division_>(other);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator+(Num const& val) const {
 		return evaluate_<addition_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator-(Num const& val) const {
 		return evaluate_<subtraction_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator*(Num const& val) const {
 		return evaluate_<multiplication_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	[[nodiscard]] constexpr auto operator/(Num const& val) const {
 		return evaluate_<division_>(val);
 	}
@@ -100,22 +103,22 @@ public:
 		return perform_<division_assign_>(other);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	constexpr return_type_& operator+=(Num const& val) {
 		return perform_<addition_assign_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	constexpr return_type_& operator-=(Num const& val) {
 		return perform_<subtraction_assign_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	constexpr return_type_& operator*=(Num const& val) {
 		return perform_<multiplication_assign_>(val);
 	}
 
-	template <numeric_type_ Num>
+	template <proper_numeric_type_ Num>
 	constexpr return_type_& operator/=(Num const& val) {
 		return perform_<division_assign_>(val);
 	}
