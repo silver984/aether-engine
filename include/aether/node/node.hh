@@ -39,7 +39,7 @@ public:
 		if (T* existing = component<T>()) {
 			return existing;
 		}
-		unique_ref<T> c = node_component::create<T>(ctx_, this);
+		unique_ref<T> c = node_component::create<T>(ctx_, this->strong_self_());
 		if (!c) {
 			return nullptr;
 		}

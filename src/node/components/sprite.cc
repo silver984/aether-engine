@@ -1,4 +1,3 @@
-#include "aether/node/components/component.hh"
 #include <aether/context.hh>
 #include <aether/node/components/sprite.hh>
 #include <aether/node/components/transform.hh>
@@ -61,7 +60,7 @@ void sprite::set_texture_wrap(texture_wrap wrap_type) {
 }
 
 bool sprite::update_transform_bounds() {
-	transform* tc = this->node()->component<transform>();
+	transform* tc = this->owner()->component<transform>();
 	if (!tc) {
 		return false;
 	}
@@ -75,7 +74,7 @@ bool sprite::init_() {
 	if (!node_component::init_()) {
 		return false;
 	}
-	return this->node()->add_component<transform>() != nullptr;
+	return this->owner()->add_component<transform>() != nullptr;
 }
 
 void sprite::draw_() {
@@ -85,8 +84,8 @@ void sprite::draw_() {
 		return;
 	}
 
-	aether::node* n = this->node();
-	visibility* vc  = n->component<visibility>();
+	strong_ref<node> n = this->owner();
+	visibility* vc     = n->component<visibility>();
 
 	if (vc && !vc->is_visible()) {
 		return;
