@@ -22,7 +22,7 @@ void sprite::set_antialiasing(bool val) {
 }
 
 bool sprite::set_texture(zip_archive const& pak, std::string_view file) {
-	if (strong_ref<Texture> tx = this->ctx_.textures->load(pak, file)) {
+	if (strong_ref<Texture> tx = resources<Texture>::load(pak, file)) {
 		texture_ = tx;
 	} else {
 		return false;

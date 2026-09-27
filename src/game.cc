@@ -1,6 +1,8 @@
+#include "aether/resources.hh"
 #include <aether/game.hh>
 #include <aether/log.hh>
 #include <aether/renderer.hh>
+#include <aether/resources.hh>
 #include <aether/timer.hh>
 #include <aether/window.hh>
 
@@ -17,7 +19,7 @@ game::~game() {
 	t.start();
 
 	scene_scheduler_.cleanup_();
-	textures_.purge_all_();
+	_res_impl::resource_cleaner_::purge_all_();
 	soloud_.deinit();
 	_window_impl::close_();
 	init_ = false;
@@ -93,13 +95,6 @@ void game::run(unique_ref<scene> s) {
 		next_frametime += std::chrono::duration_cast<std::chrono::steady_clock::duration>(raw_dt);
 		std::this_thread::sleep_until(next_frametime);
 	}
-}
-
-context game::ctx() {
-	return {
-	        .scene_scheduler = &scene_scheduler_,
-	        .textures        = &textures_,
-	};
 }
 
 } // namespace aether

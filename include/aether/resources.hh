@@ -7,7 +7,13 @@
 #include <aether/timer.hh>
 #include <aether/zip_archive.hh>
 
+#include <algorithm>
 #include <utility>
+#include <vector>
+
+namespace aether {
+class game;
+}
 
 namespace aether::_res_impl {
 
@@ -17,20 +23,41 @@ concept loadable_ = requires {
 	{ loader<T>::unload(std::declval<T const&>()) } -> std::same_as<void>;
 };
 
+class resource_cleaner_ final {
+	friend class aether::game;
+
+public:
+	resource_cleaner_() = delete;
+
+	static void schedule_once_for_cleanup(void (*fn)()) {
+		if (!std::ranges::contains(queue_, fn)) {
+			queue_.push_back(fn);
+		}
+	}
+
+private:
+	static void purge_all_() {
+		for (auto it = queue_.begin(); it != queue_.end();) {
+			(*it)(); // call the function
+			it = queue_.erase(it);
+		}
+	}
+
+	static inline std::vector<void (*)()> queue_;
+};
+
 } // namespace aether::_res_impl
 
 namespace aether {
-
-class game;
 
 template <_res_impl::loadable_ T>
 class resources final {
 	friend class game;
 
 public:
-	~resources() { purge_all_(); }
+	resources() = delete;
 
-	[[nodiscard]] strong_ref<T> load(zip_archive const& pkg, std::string_view file) {
+	[[nodiscard]] static strong_ref<T> load(zip_archive const& pkg, std::string_view file) {
 		if (strong_ref<T> from_cache = cache_fetch_(file)) {
 			return from_cache;
 		}
@@ -51,20 +78,19 @@ public:
 
 		purge_unused_();
 		auto [it, _] = cache_.emplace(std::string(file), std::move(out));
+		_res_impl::resource_cleaner_::schedule_once_for_cleanup(&purge_all_);
 		return it->second;
 	}
 
 private:
-	resources() = default;
-
-	[[nodiscard]] strong_ref<T> cache_fetch_(std::string_view file) const {
+	[[nodiscard]] static strong_ref<T> cache_fetch_(std::string_view file) {
 		if (auto it = cache_.find(file); it != cache_.end()) {
 			return it->second;
 		}
 		return nullptr;
 	}
 
-	void purge_unused_() {
+	static void purge_unused_() {
 		for (auto it = cache_.begin(); it != cache_.end();) {
 			if (it->second.strong_count() <= 1) {
 				unload_(*it->second);
@@ -75,19 +101,19 @@ private:
 		}
 	}
 
-	void purge_all_() {
+	static void purge_all_() {
 		for (auto it = cache_.begin(); it != cache_.end();) {
 			unload_(*it->second);
 			it = cache_.erase(it);
 		}
 	}
 
-	void unload_(T& data) {
+	static void unload_(T& data) {
 		loader<T>::unload(data);
 		log<trace>({"Unloaded resource ? address: 0x{:X}", reinterpret_cast<uintptr_t>(&data)});
 	}
 
-	string_map<strong_ref<T>> cache_;
+	static inline string_map<strong_ref<T>> cache_;
 };
 
 } // namespace aether

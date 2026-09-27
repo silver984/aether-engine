@@ -2,7 +2,6 @@
 
 #include <aether/context.hh>
 #include <aether/ref.hh>
-#include <aether/resources.hh>
 #include <aether/scene_scheduler.hh>
 #include <aether/size.hh>
 
@@ -36,11 +35,10 @@ public:
 
 	bool init(_args::game_init_ const& args);
 	void run(unique_ref<scene> s);
-	[[nodiscard]] context ctx();
+	[[nodiscard]] context ctx() { return {.scene_scheduler = &scene_scheduler_}; }
 
 private:
 	scene_scheduler scene_scheduler_;
-	resources<Texture> textures_;
 	SoLoud::Soloud soloud_;
 	bool init_ = false;
 };
