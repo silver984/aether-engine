@@ -174,13 +174,13 @@ public:
 	}
 
 private:
-	template <proper_numeric_type_ Num_>
+	template <typename Num_>
 	using common_value_type_ = std::common_type_t<_value_type, Num_>;
 
-	template <matching_capacity_math_type_<N_> Other_>
+	template <typename Other_>
 	using common_math_value_type_ = common_value_type_<typename Other_::_value_type>;
 
-	template <matching_capacity_math_type_<N_> Other_>
+	template <typename Other_>
 	using common_indexable_math_type_ = T_<common_math_value_type_<Other_>>;
 
 	[[nodiscard]] constexpr return_type_& self_() { return static_cast<return_type_&>(*this); }
