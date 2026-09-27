@@ -52,11 +52,11 @@ private:
 	size<uint32_t> bounds_;
 
 	vec2<float> position_;
-	vec2<float> anchor_ = vec2<float>(0.5f);
-	vec2<float> scale_  = vec2<float>(1.f);
+	vec2<float> anchor_ = {0.5f};
+	vec2<float> scale_  = {1.f};
 	vec2<float> shear_; // degrees
 
-	vec2<bool> is_flipped_ = vec2<bool>(false);
+	vec2<bool> is_flipped_ = {false};
 
 	float rotation_ = 0.f; // degrees
 
