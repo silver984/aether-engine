@@ -10,3 +10,7 @@
 
 # CMake
 /build/
+
+# temporary
+/include/aether/embedded/
+/src/embedded/
