@@ -58,7 +58,7 @@ struct texture_guard_ final {
 };
 
 struct vertex_draw_guard_ final {
-	explicit vertex_draw_guard_() { rlBegin(RL_QUADS); }
+	vertex_draw_guard_() { rlBegin(RL_QUADS); }
 	~vertex_draw_guard_() { rlEnd(); }
 };
 
