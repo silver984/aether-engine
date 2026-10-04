@@ -8,30 +8,29 @@
 namespace aether::_window_impl {
 
 size<uint32_t> bounds_;
-uint32_t fps_            = 0;
-unsigned int last_flags_ = 0;
+uint32_t fps_       = 0;
+unsigned int flags_ = 0;
 
 bool create_(window::configuration const& cfg) {
-	unsigned int flags = FLAG_WINDOW_ALWAYS_RUN;
+	if (flags_ != 0) {
+		ClearWindowState(flags_);
+		flags_ = 0;
+	}
 
 	bool const undecorated = (cfg.flags & window::flags::undecorated) != window::flags::none;
 	bool const resizable   = (cfg.flags & window::flags::resizable) != window::flags::none && !undecorated;
 
+	flags_ |= FLAG_WINDOW_ALWAYS_RUN;
+
 	if (undecorated) {
-		flags |= FLAG_WINDOW_UNDECORATED;
+		flags_ |= FLAG_WINDOW_UNDECORATED;
 	}
 
 	if (resizable) {
-		flags |= FLAG_WINDOW_RESIZABLE;
+		flags_ |= FLAG_WINDOW_RESIZABLE;
 	}
 
-	if (last_flags_ != 0) {
-		ClearWindowState(last_flags_);
-	}
-
-	last_flags_ = flags;
-	SetConfigFlags(flags);
-
+	SetConfigFlags(flags_);
 	InitWindow(cfg.bounds.width, cfg.bounds.height, cfg.title.data());
 
 	if (!IsWindowReady()) {

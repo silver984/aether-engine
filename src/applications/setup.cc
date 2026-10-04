@@ -9,8 +9,7 @@ void setup::draw_() {
 	size<float> bounds = static_cast<size<float>>(window::bounds());
 	ImGui::SetNextWindowSize({bounds.width, bounds.height});
 	ImGui::SetNextWindowPos({0.f, 0.f});
-	ImGui::Begin("##main", nullptr,
-	             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+	ImGui::Begin("##main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 	ImGui::Text("Aether Setup");
 	ImGui::End();
 }

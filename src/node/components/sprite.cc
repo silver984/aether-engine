@@ -89,7 +89,7 @@ void sprite::draw_() {
 	}
 
 	strong_ref<transform> tc = n->component<transform>();
-	renderer::draw_texture(*texture_, texture_source_rect_, tc ? tc->matrix() : mat3::identity(), rgba(255) /* temporary rgba */);
+	renderer::draw_texture(*texture_, texture_source_rect_, tc ? tc->matrix() : mat3::identity(), rgba{255} /* temporary rgba */);
 }
 
 } // namespace aether

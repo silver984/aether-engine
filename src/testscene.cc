@@ -31,22 +31,5 @@ bool testscene::init_() {
 		this->add_child(boy);
 	}
 
-	strong_ref<node> silly = node::create(this->ctx_);
-
-	if (!silly) {
-		return false;
-	}
-
-	{
-		strong_ref<sprite> sc = silly->add_component<sprite>();
-		sc->set_texture(pak, "cats.silly");
-		sc->set_antialiasing(true);
-
-		strong_ref<transform> tc = silly->component<transform>();
-		tc->set_scale(0.2f);
-		tc->set_position(boy->component<transform>()->position() - 120.f);
-		boy->add_child(silly);
-	}
-
 	return true;
 }
