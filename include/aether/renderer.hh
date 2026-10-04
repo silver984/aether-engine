@@ -6,9 +6,12 @@
 
 namespace aether::_renderer_impl {
 
+struct draw_guard_ final {
+	explicit draw_guard_();
+	~draw_guard_();
+};
+
 void setup_2d_();
-void start_draw_();
-void end_draw_();
 
 } // namespace aether::_renderer_impl
 

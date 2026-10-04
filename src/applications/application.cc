@@ -45,15 +45,12 @@ void application::run() {
 			update_(dt);
 		}
 
-		// todo: new draw_guard_ class from namespace _render_impl
-
-		_renderer_impl::start_draw_();
-
-		if (!window_currently_minimized) {
-			draw_();
+		{
+			_renderer_impl::draw_guard_ const draw_guard;
+			if (!window_currently_minimized) {
+				draw_();
+			}
 		}
-
-		_renderer_impl::end_draw_();
 
 		if (window_currently_minimized) {
 			next_frametime = std::chrono::steady_clock::now();
