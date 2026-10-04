@@ -6,6 +6,8 @@
 #include <raymath.h>
 #include <rlgl.h>
 
+#include <rlImGui.h>
+
 #include <cmath>
 
 namespace aether::_renderer_impl {
@@ -13,9 +15,13 @@ namespace aether::_renderer_impl {
 draw_guard_::draw_guard_() {
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
+	rlImGuiBegin();
 }
 
-draw_guard_::~draw_guard_() { EndDrawing(); }
+draw_guard_::~draw_guard_() {
+	rlImGuiEnd();
+	EndDrawing();
+}
 
 void setup_2d_() {
 	rlDisableBackfaceCulling();

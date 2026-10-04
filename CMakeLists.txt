@@ -32,6 +32,8 @@ target_sources(
 
 add_subdirectory(vendor)
 
+# todo: make functions so this file is cleaner and things are modular
+
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
@@ -61,13 +63,47 @@ target_compile_definitions(
 )
 
 CPMAddPackage(
+  NAME imgui
+  GITHUB_REPOSITORY ocornut/imgui
+  GIT_TAG v1.92.9-docking
+  GIT_SHALLOW TRUE
+  DOWNLOAD_ONLY TRUE
+)
+
+add_library(
+  imgui STATIC
+  ${imgui_SOURCE_DIR}/imgui.cpp
+  ${imgui_SOURCE_DIR}/imgui_draw.cpp
+  ${imgui_SOURCE_DIR}/imgui_tables.cpp
+  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+)
+
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+
+CPMAddPackage(
+  NAME rlimgui
+  GITHUB_REPOSITORY raylib-extras/rlImGui
+  GIT_TAG 1550009359ad975927f7f0e4a3f47e3f27123ea9
+  GIT_SHALLOW TRUE
+  DOWNLOAD_ONLY TRUE
+)
+
+add_library(rlimgui STATIC ${rlimgui_SOURCE_DIR}/rlImGui.cpp)
+target_include_directories(rlimgui PUBLIC ${rlimgui_SOURCE_DIR})
+target_link_libraries(
+  rlimgui PUBLIC
+  raylib
+  imgui
+)
+
+CPMAddPackage(
   NAME fmt
   GITHUB_REPOSITORY fmtlib/fmt
   GIT_TAG 12.1.0
   GIT_SHALLOW TRUE
 )
 
-target_link_libraries(app PRIVATE raylib)
+target_link_libraries(app PRIVATE rlimgui)
 
 add_subdirectory(modules)
 

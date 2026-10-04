@@ -2,7 +2,9 @@
 #include <aether/math.hh>
 #include <aether/window.hh>
 
+#include <imgui.h>
 #include <raylib.h>
+#include <rlImGui.h>
 
 namespace aether::_window_impl {
 
@@ -34,13 +36,21 @@ bool create_(window::configuration const& cfg) {
 	SetExitKey(KEY_NULL);
 	SetWindowMinSize(cfg.bounds.width / 2, cfg.bounds.height / 2);
 
+	rlImGuiSetup(true);
+	ImGuiIO& io    = ImGui::GetIO();
+	io.IniFilename = nullptr;
+
 	bounds_ = cfg.bounds;
 	fps_    = cfg.fps;
 
 	return true;
 }
 
-void close_() { CloseWindow(); }
+void close_() {
+	rlImGuiShutdown();
+	CloseWindow();
+}
+
 bool should_close_() { return WindowShouldClose(); }
 bool is_minimized_() { return IsWindowMinimized(); }
 
