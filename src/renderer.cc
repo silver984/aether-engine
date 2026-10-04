@@ -14,7 +14,7 @@ namespace aether::_renderer_impl {
 
 draw_guard_::draw_guard_() {
 	BeginDrawing();
-	ClearBackground(RAYWHITE);
+	ClearBackground(BLACK);
 	rlImGuiBegin();
 }
 

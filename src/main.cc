@@ -1,12 +1,22 @@
 #include <aether/applications/engine.hh>
+#include <aether/applications/setup.hh>
 
 int main() {
-	aether::engine engine;
-
-	if (engine.init()) {
-		engine.run();
-		return 0;
+	{
+		aether::setup setup;
+		if (!setup.init()) {
+			return 1;
+		}
+		setup.run();
 	}
 
-	return 1;
+	{
+		aether::engine engine;
+		if (!engine.init()) {
+			return 1;
+		}
+		engine.run();
+	}
+
+	return 0;
 }

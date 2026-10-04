@@ -1,4 +1,3 @@
-#include <aether/log.hh>
 #include <aether/math.hh>
 #include <aether/window.hh>
 
@@ -9,7 +8,8 @@
 namespace aether::_window_impl {
 
 size<uint32_t> bounds_;
-uint32_t fps_ = 0;
+uint32_t fps_            = 0;
+unsigned int last_flags_ = 0;
 
 bool create_(window::configuration const& cfg) {
 	unsigned int flags = FLAG_WINDOW_ALWAYS_RUN;
@@ -25,7 +25,13 @@ bool create_(window::configuration const& cfg) {
 		flags |= FLAG_WINDOW_RESIZABLE;
 	}
 
+	if (last_flags_ != 0) {
+		ClearWindowState(last_flags_);
+	}
+
+	last_flags_ = flags;
 	SetConfigFlags(flags);
+
 	InitWindow(cfg.bounds.width, cfg.bounds.height, cfg.title.data());
 
 	if (!IsWindowReady()) {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../window.hh"
-
 #include <aether/size.hh>
+#include <aether/window.hh>
 
 namespace aether {
 
