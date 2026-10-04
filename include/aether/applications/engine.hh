@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../scene_scheduler.hh"
-#include "aether/window.hh"
 #include "application.hh"
+
+#include <aether/scene_scheduler.hh>
 
 namespace aether {
 
@@ -12,8 +12,8 @@ protected:
 
 	void pre_run_() override;
 
-	void update_(float dt) override { scene_scheduler_.update_scene_(dt); }
-	void draw_() override { scene_scheduler_.draw_scene_(); }
+	void update_(float dt) override;
+	void draw_() override;
 
 	[[nodiscard]] window::configuration window_configuration_() const override {
 		return {
@@ -26,6 +26,9 @@ protected:
 
 private:
 	scene_scheduler scene_scheduler_;
+	float time_elapsed_     = 0.f;
+	uint32_t frame_count_   = 0;
+	uint32_t evaluated_fps_ = 0;
 };
 
 } // namespace aether
