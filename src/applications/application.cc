@@ -2,7 +2,7 @@
 #include <aether/log.hh>
 #include <aether/math.hh>
 #include <aether/renderer.hh>
-#include <aether/timer.hh>
+#include <aether/timer_guard.hh>
 #include <aether/window.hh>
 
 #include <raylib.h>
@@ -84,16 +84,9 @@ bool application::init_() {
 }
 
 void application::shutdown_() {
-	log<info>({"Application shutting down"});
-	// todo: make a better timer class
-	timer t;
-	t.start();
-
+	util::timer_guard<info> const timer({"Shutting down"});
 	close_();
 	_window_impl::close_();
-
-	t.stop();
-	log<info>({"Done ({}ms)", t.duration()});
 }
 
 } // namespace aether

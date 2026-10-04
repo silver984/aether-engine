@@ -4,7 +4,7 @@
 #include <aether/log.hh>
 #include <aether/ref.hh>
 #include <aether/string_map.hh>
-#include <aether/timer.hh>
+#include <aether/timer_guard.hh>
 #include <aether/zip_archive.hh>
 
 #include <algorithm>
@@ -58,29 +58,26 @@ public:
 			return from_cache;
 		}
 
-		log<trace>({"Loading resource ? file: \"{}\"", file});
-		timer t;
-		t.start();
+		strong_ref<T> out = nullptr;
 
-		strong_ref<T> out = loader<T>::load(pkg, file);
-
-		if (!out) {
-			log<error>({"Failed to load resource ? file: \"{}\"", file});
-			return nullptr;
+		{
+			util::timer_guard<trace> const timer({"Loading resource \"{}\"", file});
+			out = loader<T>::load(pkg, file);
+			if (!out) {
+				log<error>({"Failed"});
+				return nullptr;
+			}
 		}
 
-		t.stop();
-		log<trace>({"Done ({}ms) ? address: 0x{:X}", t.duration(), reinterpret_cast<uintptr_t>(out.get())});
-
 		purge_unused_();
-		auto [it, _] = cache_.emplace(std::string(file), std::move(out));
+		auto const [it, _] = cache_.emplace(std::string(file), std::move(out));
 		_res_impl::resource_cleaner_::schedule_once_for_cleanup(&purge_all_);
 		return it->second;
 	}
 
 private:
 	[[nodiscard]] static strong_ref<T> cache_fetch_(std::string_view file) {
-		if (auto it = cache_.find(file); it != cache_.end()) {
+		if (auto const it = cache_.find(file); it != cache_.end()) {
 			return it->second;
 		}
 		return nullptr;
@@ -104,10 +101,7 @@ private:
 		}
 	}
 
-	static void unload_(T& data) {
-		loader<T>::unload(data);
-		log<trace>({"Unloaded resource ? address: 0x{:X}", reinterpret_cast<uintptr_t>(&data)});
-	}
+	static void unload_(T& data) { loader<T>::unload(data); }
 
 	static inline util::string_map<strong_ref<T>> cache_;
 };
