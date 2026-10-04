@@ -20,6 +20,7 @@ target_include_directories(app PRIVATE include)
 
 file(GLOB AETHER_SOURCE CONFIGURE_DEPENDS src/*.c*)
 file(GLOB AETHER_APPLICATION_SOURCE CONFIGURE_DEPENDS src/applications/*.c*)
+file(GLOB_RECURSE AETHER_EMBEDDED_SOURCE CONFIGURE_DEPENDS src/embedded/*.c*)
 file(GLOB AETHER_NODE_COMPONENTS_SOURCE CONFIGURE_DEPENDS src/node/components/*.c*)
 
 target_sources(
@@ -27,6 +28,7 @@ target_sources(
   src/node/node.cc
   ${AETHER_SOURCE}
   ${AETHER_APPLICATION_SOURCE}
+  ${AETHER_EMBEDDED_SOURCE}
   ${AETHER_NODE_COMPONENTS_SOURCE}
 )
 
