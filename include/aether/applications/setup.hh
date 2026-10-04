@@ -11,7 +11,7 @@ protected:
 	[[nodiscard]] window::configuration window_configuration_() const override {
 		return {
 		        .title  = "Aether Setup",
-		        .bounds = {640, 480},
+		        .bounds = {480, 360},
 		        .flags  = window::flags::undecorated,
 		};
 	}
