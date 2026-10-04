@@ -3,7 +3,7 @@
 #include <aether/loader.hh>
 #include <aether/log.hh>
 #include <aether/ref.hh>
-#include <aether/string.hh>
+#include <aether/string_map.hh>
 #include <aether/timer.hh>
 #include <aether/zip_archive.hh>
 
@@ -109,7 +109,7 @@ private:
 		log<trace>({"Unloaded resource ? address: 0x{:X}", reinterpret_cast<uintptr_t>(&data)});
 	}
 
-	static inline string_map<strong_ref<T>> cache_;
+	static inline util::string_map<strong_ref<T>> cache_;
 };
 
 } // namespace aether

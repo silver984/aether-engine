@@ -1,7 +1,6 @@
 #pragma once
 
-#include "operable_enum_class.hh"
-
+#include <aether/operable_enum_class.hh>
 #include <aether/size.hh>
 
 #include <cstdint>
@@ -16,10 +15,10 @@ enum class flags : uint8_t {
 };
 
 struct configuration final {
-	std::string_view title           = "unnamed";
-	size<uint32_t> bounds            = {360};
-	uint32_t fps                     = 60;
-	operable_enum_class<flags> flags = flags::none;
+	std::string_view title                 = "unnamed";
+	size<uint32_t> bounds                  = {360};
+	uint32_t fps                           = 60;
+	util::operable_enum_class<flags> flags = flags::none;
 };
 
 [[nodiscard]] size<uint32_t> bounds();

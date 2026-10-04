@@ -11,9 +11,7 @@ void engine::close_() {
 }
 
 void engine::pre_run_() {
-	context const ctx{
-	        .scene_scheduler = &scene_scheduler_,
-	};
+	context const ctx{.scene_scheduler = &scene_scheduler_};
 	scene_scheduler_.replace_scene(scene::create<testscene>(ctx));
 }
 

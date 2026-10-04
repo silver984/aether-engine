@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace aether {
+namespace aether::util {
 
 template <typename T>
         requires std::is_scoped_enum_v<T>
@@ -42,4 +42,4 @@ private:
 	T val_;
 };
 
-} // namespace aether
+} // namespace aether::util
