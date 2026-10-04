@@ -17,7 +17,7 @@ void setup_2d_() {
 
 void start_draw_() {
 	BeginDrawing();
-	ClearBackground(WHITE);
+	ClearBackground(RAYWHITE);
 }
 
 void end_draw_() { EndDrawing(); }

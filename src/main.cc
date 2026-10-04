@@ -1,17 +1,12 @@
-#include <aether/game.hh>
-#include <aether/testscene.hh>
-
-using namespace aether;
+#include <aether/applications/engine.hh>
 
 int main() {
-	game aether;
-	if (!aether.init({
-	            .window_title = "Aether Engine v0.0.1",
-	            .resolution   = {1280, 720},
-	    })) {
-		return -1;
+	aether::engine engine;
+
+	if (engine.init()) {
+		engine.run();
+		return 0;
 	}
-	context ctx = aether.ctx();
-	aether.run(scene::create<testscene>(ctx));
-	return 0;
+
+	return 1;
 }

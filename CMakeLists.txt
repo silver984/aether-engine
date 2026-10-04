@@ -19,12 +19,14 @@ set_target_properties(
 target_include_directories(app PRIVATE include)
 
 file(GLOB AETHER_SOURCE CONFIGURE_DEPENDS src/*.c*)
+file(GLOB AETHER_APPLICATION_SOURCE CONFIGURE_DEPENDS src/applications/*.c*)
 file(GLOB AETHER_NODE_COMPONENTS_SOURCE CONFIGURE_DEPENDS src/node/components/*.c*)
 
 target_sources(
   app PRIVATE
   src/node/node.cc
   ${AETHER_SOURCE}
+  ${AETHER_APPLICATION_SOURCE}
   ${AETHER_NODE_COMPONENTS_SOURCE}
 )
 

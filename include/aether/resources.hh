@@ -23,10 +23,7 @@ concept loadable_ = requires {
 	{ loader<T>::unload(std::declval<T const&>()) } -> std::same_as<void>;
 };
 
-class resource_cleaner_ final {
-	friend class aether::game;
-
-public:
+struct resource_cleaner_ final {
 	resource_cleaner_() = delete;
 
 	static void schedule_once_for_cleanup(void (*fn)()) {
@@ -35,7 +32,6 @@ public:
 		}
 	}
 
-private:
 	static void purge_all_() {
 		for (auto it = queue_.begin(); it != queue_.end();) {
 			(*it)(); // call the function

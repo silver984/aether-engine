@@ -9,7 +9,7 @@
 namespace aether {
 
 template <_math_impl::numeric_type_ T>
-[[nodiscard]] constexpr T lerp(T const& a, T const& b, T t) {
+[[nodiscard]] constexpr T lerp(T const& a, T const& b, T const& t) {
 	return a + (b - a) * t;
 }
 

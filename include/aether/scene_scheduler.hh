@@ -4,11 +4,10 @@
 
 namespace aether {
 
-class game;
 class scene;
 
 class scene_scheduler final {
-	friend class game;
+	friend class engine;
 
 public:
 	~scene_scheduler() = default;

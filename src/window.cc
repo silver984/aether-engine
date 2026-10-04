@@ -7,15 +7,24 @@
 namespace aether::_window_impl {
 
 size<uint32_t> bounds_;
-uint32_t fps_{0};
+uint32_t fps_ = 0;
 
-bool init_(std::string_view title, size<uint32_t> bounds, uint32_t fps) {
-	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
+bool create_(window::configuration const& cfg) {
+	unsigned int flags = FLAG_WINDOW_ALWAYS_RUN;
 
-	bounds_ = bounds;
-	fps_    = fps;
+	bool const undecorated = (cfg.flags & window::flags::undecorated) != window::flags::none;
+	bool const resizable   = (cfg.flags & window::flags::resizable) != window::flags::none && !undecorated;
 
-	InitWindow(bounds.width, bounds.height, title.data());
+	if (undecorated) {
+		flags |= FLAG_WINDOW_UNDECORATED;
+	}
+
+	if (resizable) {
+		flags |= FLAG_WINDOW_RESIZABLE;
+	}
+
+	SetConfigFlags(flags);
+	InitWindow(cfg.bounds.width, cfg.bounds.height, cfg.title.data());
 
 	if (!IsWindowReady()) {
 		return false;
@@ -23,7 +32,10 @@ bool init_(std::string_view title, size<uint32_t> bounds, uint32_t fps) {
 
 	SetTargetFPS(0);
 	SetExitKey(KEY_NULL);
-	SetWindowMinSize(640, 360);
+	SetWindowMinSize(cfg.bounds.width / 2, cfg.bounds.height / 2);
+
+	bounds_ = cfg.bounds;
+	fps_    = cfg.fps;
 
 	return true;
 }
